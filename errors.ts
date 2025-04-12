@@ -16,6 +16,9 @@ export enum ErrorCode {
     FAILED_TO_LIST_SUBJECTS = "FAILED_TO_LIST_SUBJECTS",
     FAILED_TO_DELETE = "FAILED_TO_DELETE",
     FAILED_TO_FETCH = "FAILED_TO_FETCH",
+    UNAUTHORIZED = "UNAUTHORIZED",
+    FORBIDDEN = "FORBIDDEN",
+    INVALID_TOKEN = "INVALID_TOKEN",
 }
 
 export const ErrorMessage = {
@@ -36,55 +39,65 @@ export const ErrorMessage = {
     [ErrorCode.FAILED_TO_LIST_SUBJECTS]: "Failed to list subject",
     [ErrorCode.FAILED_TO_DELETE]: "Failed to delete subject",
     [ErrorCode.FAILED_TO_FETCH]: "Failed to get subject",
+    [ErrorCode.UNAUTHORIZED]: "Unauthorized. Please log in.",
+    [ErrorCode.FORBIDDEN]: "Access denied. Insufficient permissions.",
+    [ErrorCode.INVALID_TOKEN]: "Invalid authentication token",
 };
 
 // 3. Error object structure (now with optional `details`)
+
+export type ErrorResponseDetails = {
+    id?: string;
+    mobile?: string;
+    email?: string;
+    role?: string;
+    subjectId?: string;
+    adminId?: string;
+    [key: string]: any; // allow additional custom info
+};
+
+
 export type ErrorResponse = {
     error: {
         code: ErrorCode;
         message: string;
-        details?: {
-            id?: string;
-            mobile?: string;
-            email?: string;
-            role?: string;
-            subjectId?: string;
-            adminId?: string;
-            [key: string]: any; // allow additional custom info
-        };
+        details?: ErrorResponseDetails;
     };
 };
 
 
-export const Errors = {
-    mobileRegistered: (): ErrorResponse => ({
-        error: { code: ErrorCode.MOBILE_REGISTERED, message: ErrorMessage[ErrorCode.MOBILE_REGISTERED] }
-    }),
-    subjectNotFound: (): ErrorResponse => ({
-        error: { code: ErrorCode.SUBJECT_NOT_FOUND, message: ErrorMessage[ErrorCode.SUBJECT_NOT_FOUND] }
-    }),
-    businessNotFound: (): ErrorResponse => ({
-        error: { code: ErrorCode.BUSINESS_NOT_FOUND, message: ErrorMessage[ErrorCode.BUSINESS_NOT_FOUND] }
-    }),
-    creatorNotFound: (): ErrorResponse => ({
-        error: { code: ErrorCode.CREATOR_NOT_FOUND, message: ErrorMessage[ErrorCode.CREATOR_NOT_FOUND] }
-    }),
-    mobileNotFound: (): ErrorResponse => ({
-        error: { code: ErrorCode.MOBILE_NOT_FOUND, message: ErrorMessage[ErrorCode.MOBILE_NOT_FOUND] }
-    }),
-    subjectCreationFailed: (): ErrorResponse => ({
-        error: { code: ErrorCode.SUBJECT_CREATION_FAILED, message: ErrorMessage[ErrorCode.SUBJECT_CREATION_FAILED] }
-    }),
-    invalidRole: (): ErrorResponse => ({
-        error: { code: ErrorCode.INVALID_ROLE, message: ErrorMessage[ErrorCode.INVALID_ROLE] }
-    }),
-    invalidInput: (): ErrorResponse => ({
-        error: { code: ErrorCode.INVALID_INPUT, message: ErrorMessage[ErrorCode.INVALID_INPUT] }
-    }),
-    alreadyExists: (): ErrorResponse => ({
-        error: { code: ErrorCode.ALREADY_EXISTS, message: ErrorMessage[ErrorCode.ALREADY_EXISTS] }
-    }),
+export const resolveStatusFromErrorCode = (code: ErrorCode): number => {
+    switch (code) {
+        case ErrorCode.MOBILE_REGISTERED:
+        case ErrorCode.ALREADY_EXISTS:
+            return 409;
+        case ErrorCode.SUBJECT_NOT_FOUND:
+        case ErrorCode.BUSINESS_NOT_FOUND:
+        case ErrorCode.CREATOR_NOT_FOUND:
+        case ErrorCode.MOBILE_NOT_FOUND:
+            return 404;
+        case ErrorCode.INVALID_INPUT:
+        case ErrorCode.INVALID_ROLE:
+        case ErrorCode.MISSING_CREDENTIALS:
+        case ErrorCode.MISSING_IDENTIFIER:
+        case ErrorCode.SUBJECT_CREATION_FAILED:
+        case ErrorCode.LOGIN_FAILED:
+        case ErrorCode.RESET_LIMIT_EXCEEDED:
+        case ErrorCode.FAILED_TO_UPDATE:
+        case ErrorCode.FAILED_TO_LIST_SUBJECTS:
+        case ErrorCode.FAILED_TO_DELETE:
+        case ErrorCode.FAILED_TO_FETCH:
+            return 400;
+        case ErrorCode.UNAUTHORIZED:
+        case ErrorCode.INVALID_TOKEN:
+            return 401;
+        case ErrorCode.FORBIDDEN:
+            return 403;
+        default:
+            return 500;
+    }
 };
+
 
 export const isError = (obj: any): boolean => {
     if (!obj || typeof obj !== "object") return false;

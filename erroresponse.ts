@@ -1,32 +1,13 @@
 import { Response } from 'express';
-import { isError, ErrorResponse, ErrorCode, ErrorMessage } from './errors';
+import {
+  isError,
+  ErrorResponse,
+  ErrorCode,
+  ErrorMessage,
+  resolveStatusFromErrorCode,
+  ErrorResponseDetails
+} from './errors';
 
-export const resolveStatusFromErrorCode = (code: ErrorCode): number => {
-  switch (code) {
-    case ErrorCode.MOBILE_REGISTERED:
-    case ErrorCode.ALREADY_EXISTS:
-      return 409;
-    case ErrorCode.SUBJECT_NOT_FOUND:
-    case ErrorCode.BUSINESS_NOT_FOUND:
-    case ErrorCode.CREATOR_NOT_FOUND:
-    case ErrorCode.MOBILE_NOT_FOUND:
-      return 404;
-    case ErrorCode.INVALID_INPUT:
-    case ErrorCode.INVALID_ROLE:
-    case ErrorCode.MISSING_CREDENTIALS:
-    case ErrorCode.MISSING_IDENTIFIER:
-      return 400;
-    case ErrorCode.SUBJECT_CREATION_FAILED:
-    case ErrorCode.LOGIN_FAILED:
-    case ErrorCode.RESET_LIMIT_EXCEEDED:
-    case ErrorCode.FAILED_TO_UPDATE:
-    case ErrorCode.FAILED_TO_LIST_SUBJECTS:
-    case ErrorCode.FAILED_TO_DELETE:
-    case ErrorCode.FAILED_TO_FETCH:
-    default:
-      return 500;
-  }
-};
 
 export const resolveStatus = (error: ErrorResponse): number => {
     return resolveStatusFromErrorCode(error.error.code);
@@ -54,9 +35,50 @@ export const createErrorResponse = (
 export const sendErrorResponse = (
   res: Response,
   code: ErrorCode,
-  details?: ErrorResponse["error"]["details"]
+  details?: ErrorResponseDetails
 ): void => {
   const status = resolveStatusFromErrorCode(code);
   const errorResponse = createErrorResponse(code, details);
   res.status(status).json(errorResponse);
+};
+
+
+
+export const Errors = {
+  mobileRegistered: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.MOBILE_REGISTERED, details),
+
+  subjectNotFound: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.SUBJECT_NOT_FOUND, details),
+
+  businessNotFound: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.BUSINESS_NOT_FOUND, details),
+
+  creatorNotFound: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.CREATOR_NOT_FOUND, details),
+
+  mobileNotFound: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.MOBILE_NOT_FOUND, details),
+
+  subjectCreationFailed: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.SUBJECT_CREATION_FAILED, details),
+
+  invalidRole: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.INVALID_ROLE, details),
+
+  invalidInput: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.INVALID_INPUT, details),
+
+  alreadyExists: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.ALREADY_EXISTS, details),
+
+  // 🔐 Auth-related:
+  unauthorized: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.UNAUTHORIZED, details),
+
+  forbidden: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.FORBIDDEN, details),
+
+  invalidToken: (details?: ErrorResponseDetails): ErrorResponse =>
+    createErrorResponse(ErrorCode.INVALID_TOKEN, details),
 };
