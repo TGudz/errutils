@@ -3,6 +3,7 @@ export enum ErrorCode {
     SUBJECT_NOT_FOUND = "SUBJECT_NOT_FOUND",
     BUSINESS_NOT_FOUND = "BUSINESS_NOT_FOUND",
     CREATOR_NOT_FOUND = "CREATOR_NOT_FOUND",
+    PROMOTION_NOT_FOUND = "PROMOTION_NOT_FOUND",
     MOBILE_NOT_FOUND = "MOBILE_NOT_FOUND",
     SUBJECT_CREATION_FAILED = "SUBJECT_CREATION_FAILED",
     INVALID_ROLE = "INVALID_ROLE",
@@ -26,6 +27,7 @@ export const ErrorMessage = {
     [ErrorCode.SUBJECT_NOT_FOUND]: "Subject not found",
     [ErrorCode.BUSINESS_NOT_FOUND]: "Business not found",
     [ErrorCode.CREATOR_NOT_FOUND]: "Creator not found",
+    [ErrorCode.PROMOTION_NOT_FOUND]: "Promotion not found",
     [ErrorCode.MOBILE_NOT_FOUND]: "Mobile number is required",
     [ErrorCode.SUBJECT_CREATION_FAILED]: "Failed to create subject entity",
     [ErrorCode.INVALID_ROLE]: "Invalid role",
@@ -75,6 +77,7 @@ export const resolveStatusFromErrorCode = (code: ErrorCode): number => {
         case ErrorCode.BUSINESS_NOT_FOUND:
         case ErrorCode.CREATOR_NOT_FOUND:
         case ErrorCode.MOBILE_NOT_FOUND:
+        case ErrorCode.PROMOTION_NOT_FOUND:
             return 404;
         case ErrorCode.INVALID_INPUT:
         case ErrorCode.INVALID_ROLE:
