@@ -72,7 +72,6 @@ export const Errors = {
   alreadyExists: (details?: ErrorResponseDetails): ErrorResponse =>
     createErrorResponse(ErrorCode.ALREADY_EXISTS, details),
 
-  // 🔐 Auth-related:
   unauthorized: (details?: ErrorResponseDetails): ErrorResponse =>
     createErrorResponse(ErrorCode.UNAUTHORIZED, details),
 

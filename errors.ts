@@ -46,8 +46,6 @@ export const ErrorMessage = {
     [ErrorCode.INVALID_TOKEN]: "Invalid authentication token",
 };
 
-// 3. Error object structure (now with optional `details`)
-
 export type ErrorResponseDetails = {
     id?: string;
     mobile?: string;
@@ -58,7 +56,6 @@ export type ErrorResponseDetails = {
     [key: string]: any; // allow additional custom info
 };
 
-
 export type ErrorResponse = {
     error: {
         code: ErrorCode;
@@ -66,7 +63,6 @@ export type ErrorResponse = {
         details?: ErrorResponseDetails;
     };
 };
-
 
 export const resolveStatusFromErrorCode = (code: ErrorCode): number => {
     switch (code) {
@@ -101,10 +97,8 @@ export const resolveStatusFromErrorCode = (code: ErrorCode): number => {
     }
 };
 
-
 export const isError = (obj: any): boolean => {
     if (!obj || typeof obj !== "object") return false;
-
     const err = obj.error;
     return (
         err &&
